@@ -1,2 +1,2 @@
-# Doki_Beta
-旅行者 - Deployed by EZPage
+# DOKIDOKI
+測一下 - Deployed by EZPage
