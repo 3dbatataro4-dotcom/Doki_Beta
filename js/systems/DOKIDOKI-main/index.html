@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FCA7D7">
+    <link rel="icon" href="https://file.garden/aWe99vhwaGcNwkok/DOKIDOKI/ICON"> 
+    <title>紙校：虛妄的迴響</title>
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<audio id="bgm-player" loop></audio>
+<audio id="se-click" src="https://file.garden/aWe99vhwaGcNwkok/%E5%8F%A4%E5%A0%A1/bgm/SXF/%E9%BB%9E%E6%93%8A%E7%95%AB%E9%9D%A2%E9%9F%B3%E6%95%88"></audio>
+<audio id="se-select" src="https://file.garden/aWe99vhwaGcNwkok/%E5%8F%A4%E5%A0%A1/bgm/SXF/%E9%81%B8%E6%93%87%E9%81%B8%E9%A0%85"></audio>
+<audio id="se-item" src="https://file.garden/aWe99vhwaGcNwkok/%E5%8F%A4%E5%A0%A1/bgm/SXF/%E7%8D%B2%E5%BE%97%E9%81%93%E5%85%B7"></audio>
+
+<div id="game-app">
+    <div id="bg-layer" class="layer active"></div>
+
+    <!-- 菜單按鈕 -->
+    <div class="menu-btn" onclick="Game.toggleMenu()">☰</div>
+    <div id="menu-modal" class="menu-modal">
+        <div class="menu-item" onclick="Game.save()">保存進度</div>
+        <div class="menu-item" onclick="Game.load()">讀取進度</div>
+        <div class="menu-item" onclick="Game.toggleAffection(); Game.toggleMenu()">查看好感度</div>
+        <div class="menu-item" onclick="Game.endDay()" id="sleep-menu-item" style="display:none; color:#ff6b6b;">關機睡覺</div>
+        <div class="menu-item" onclick="location.reload()">返回標題</div>
+    </div>
+
+    <div id="affection-modal" class="menu-modal" style="top: 60px; right: 15px;" onclick="event.stopPropagation()">
+        <div style="padding:10px; color:#aaa; font-size:0.8em; text-align:center; border-bottom:1px solid #444;">好感度狀態</div>
+        <div style="padding:10px; color:#aaa; font-size:0.8em; text-align:center; border-bottom:1px solid #444; position: relative;">
+            好感度狀態
+            <div style="position:absolute; right:5px; top:5px; cursor:pointer; color:#fff; font-size:1.2em; line-height:1;" onclick="Game.toggleAffection()">×</div>
+        </div>
+        <div id="aff-peter" class="menu-item" style="text-align:left; color:var(--peter-color)">彼得: 0</div>
+        <div id="aff-lanlan" class="menu-item" style="text-align:left; color:var(--lanlan-color)">蘭蘭: 0</div>
+        <div id="aff-ora" class="menu-item" style="text-align:left; color:var(--ora-color)">奧拉: 0</div>
+    </div>
+
+    <div id="notification-area" class="notification-area"></div>
+
+    <div id="char-layer" class="layer active">
+        <img id="char-img" class="sprite" src="" style="display: none;">
+    </div>
+
+    <div id="ui-layer" class="layer hidden">
+        <div class="dialogue-box" onclick="Game.next()">
+            <div id="name-tag" class="name-tag"></div>
+            <div id="dialogue-text" class="text-content"></div>
+        </div>
+    </div>
+
+    <div id="choices-overlay" class="layer hidden">
+        </div>
+
+    <div id="minigame-layer" class="layer hidden">
+        <h3 style="text-align:center; color:var(--primary); margin-bottom:5px;">社團活動：思維拼圖</h3>
+        <p style="text-align:center; font-size:0.9em; color:#aaa; margin-top:0;">挑選關鍵詞，拼湊出他們內心的聲音。</p>
+        
+        <div class="slot-container">
+            <div class="slot" id="slot-1">?</div>
+            <div class="slot" id="slot-2">?</div>
+        </div>
+        
+        <div id="msg-area" style="text-align:center; height:30px; color:gold; font-weight:bold; text-shadow:0 0 5px black;"></div>
+
+        <div class="inventory" id="inventory-grid"></div>
+        
+        <div style="text-align:center; color:#666; font-size:0.8em; margin:5px;">已收集碎片: <span id="fragment-count">0</span>/3</div>
+
+        <div style="display:flex; justify-content:center; gap:15px; margin-top:10px;">
+            <button class="choice-btn" style="width:auto; text-align:center;" onclick="Minigame.combine()">合成</button>
+            <button class="choice-btn" style="width:auto; text-align:center;" id="finish-btn" onclick="Minigame.finish()" disabled>完成</button>
+        </div>
+    </div>
+
+    <div id="sns-layer" class="layer hidden" onclick="Game.next()">
+        <div class="chat-header">
+            <div id="chat-back-btn" style="margin-right:10px; cursor:pointer; display:none;" onclick="Game.showContactList()">❮</div>
+            <div id="chat-title-icon" style="width:30px;height:30px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-right:10px;">#</div> 
+            <span id="chat-title">身心靈自助研究社 (4)</span>
+            <div style="flex-grow:1"></div>
+        </div>
+        
+        <div id="contact-list" class="contact-list"></div>
+
+        <div id="chat-body" class="chat-body"></div>
+        <div id="moments-feed" class="moments-feed"></div>
+        <div id="chat-choices" class="chat-choices hidden"></div>
+        
+        <div id="suggestion-container" class="suggestion-container"></div>
+
+        <div class="chat-footer">
+            <input type="text" id="chat-input-real" class="chat-input-fake" style="padding: 0 15px; color: white; border: none;" placeholder="輸入訊息...">
+            <div class="chat-send-fake" onclick="Game.sendChat()">➤</div>
+        </div>
+        <div class="sns-nav">
+            <div class="sns-tab active" onclick="Game.switchSnsTab('chat')">聊天室</div>
+            <div class="sns-tab" onclick="Game.switchSnsTab('moments')">朋友圈</div>
+        </div>
+    </div>
+
+    <div id="start-screen" class="layer active">
+        <div style="width:100px; height:100px; background-image:url('https://file.garden/aWe99vhwaGcNwkok/DOKIDOKI/ICON'); background-size:cover; border-radius:20px; margin-bottom:20px; box-shadow:0 0 20px rgba(252, 167, 215, 0.5);"></div>
+        <h1 style="text-shadow: 0 0 10px rgba(255,255,255,0.5);">紙校：虛妄的迴響</h1>
+        <p style="color: #ccc; font-size: 0.9em; margin-bottom: 30px;">Day 1: Echoes of the Absent</p>
+        <input type="text" id="player-name" placeholder="請輸入姓名" autocomplete="off">
+        <button class="start-btn" onclick="Game.start()">入學報到</button>
+        <button class="start-btn" style="margin-top:10px; font-size:1em; border-color:#666; color:#aaa;" onclick="Game.load()">讀取存檔</button>
+    </div>
+</div>
+
+<!-- Scripts (Order Matters!) -->
+<script src="js/data/assets.js"></script>
+<script src="js/scripts/day1.js"></script>
+<script src="js/scripts/day2.js"></script>
+<script src="js/scripts/day3.js"></script>
+<script src="js/systems/ai.js"></script>
+<script src="js/systems/minigame.js"></script>
+<script src="js/systems/chat.js"></script>
+<script src="js/core/game.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
